@@ -3,8 +3,12 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import usersRouter from "./routers/users/users-router.js";
+import { Database } from "./database/db.js";
 
 const app = express();
+
+const database = new Database();
+database.setup();
 
 app.use(cors());
 app.use(morgan());

@@ -1,54 +1,22 @@
-export class UserEntity {
-    users = [
-        {
-            id: 1,
-            name: "Luis",
-        },
-        {
-            id: 2,
-            name: "Juanito",
-        },
-        {
-            id: 3,
-            name: "Pedrito",
-        },
-    ];
+import { DataTypes } from "sequelize";
+import { Database } from "../../database/db.js";
 
-    // getAll
+const database = new Database();
+const Users = database.db.define("Users", {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+});
 
-    getAll() {
-        return this.users;
-    }
+Users.sync();
 
-    // get
-
-    get(id) {
-        return this.users.find((u) => u.id === id);
-    }
-
-    // create
-
-    create(user) {
-        const newUser = { name: user.name, id: this.users.length + 1 };
-        this.users.push(newUser);
-        return newUser;
-    }
-
-    // update
-
-    update(id, userData) {
-        const newUsers = this.users.filter((u) => u.id !== id);
-
-        const updated = { id: id, name: userData.name };
-        newUsers.push(updated);
-
-        this.users = newUsers;
-
-        return updated;
-    }
-    // delete
-
-    delete(id) {
-        this.users = this.users.filter((u) => u.id !== id);
-    }
-}
+export default Users;
