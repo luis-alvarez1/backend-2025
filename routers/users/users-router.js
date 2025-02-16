@@ -6,16 +6,35 @@ import {
     GetAllUsers,
     UpdateUser,
 } from "./users-controllers.js";
+import { body, param } from "express-validator";
+import validate from "../../middlewares/validate.js";
 
 const usersRouter = Router();
 
-usersRouter.get("/", [middlewareCustom], GetAllUsers);
+usersRouter.get("/", GetAllUsers);
 
-usersRouter.post("/", CreateUsers);
+usersRouter.post(
+    "/",
+    [body("name").exists().isString(), validate],
+    CreateUsers
+);
 
 //  [Patch] localhost:8000/users/2
-usersRouter.patch("/:id", UpdateUser);
+usersRouter.patch(
+    "/:id",
+    [
+        param("id").exists().isNumeric(),
+        body("id").not().exists(),
+        body("name").exists().isString(),
+        validate,
+    ],
+    UpdateUser
+);
 //  [DELETE] localhost:8000/users/2
-usersRouter.delete("/:id", DeleteUser);
+usersRouter.delete(
+    "/:id",
+    [param("id").exists().isNumeric(), validate],
+    DeleteUser
+);
 
 export default usersRouter;
