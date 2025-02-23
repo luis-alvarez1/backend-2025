@@ -4,6 +4,7 @@ import {
     CreateUsers,
     DeleteUser,
     GetAllUsers,
+    Login,
     UpdateUser,
 } from "./users-controllers.js";
 import { body, param } from "express-validator";
@@ -22,6 +23,16 @@ usersRouter.post(
         validate,
     ],
     CreateUsers
+);
+
+usersRouter.post(
+    "/login",
+    [
+        body("email").exists().isString().isEmail(),
+        body("password").exists().isString().isLength({ min: 4 }),
+        validate,
+    ],
+    Login
 );
 
 //  [Patch] localhost:8000/users/2
