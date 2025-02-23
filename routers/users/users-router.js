@@ -15,7 +15,12 @@ usersRouter.get("/", GetAllUsers);
 
 usersRouter.post(
     "/",
-    [body("name").exists().isString(), validate],
+    [
+        body("name").exists().isString().isAlphanumeric(),
+        body("email").exists().isString().isEmail(),
+        body("password").exists().isString().isLength({ min: 4 }),
+        validate,
+    ],
     CreateUsers
 );
 
@@ -25,7 +30,9 @@ usersRouter.patch(
     [
         param("id").exists().isNumeric(),
         body("id").not().exists(),
-        body("name").exists().isString(),
+        body("name").optional().isString().isAlphanumeric(),
+        body("email").optional().isString().isEmail(),
+        body("password").optional().isString().isLength({ min: 4 }),
         validate,
     ],
     UpdateUser
