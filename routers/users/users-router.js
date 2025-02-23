@@ -9,10 +9,11 @@ import {
 } from "./users-controllers.js";
 import { body, param } from "express-validator";
 import validate from "../../middlewares/validate.js";
+import { authMiddleware } from "../../middlewares/auth.js";
 
 const usersRouter = Router();
 
-usersRouter.get("/", GetAllUsers);
+usersRouter.get("/", [authMiddleware], GetAllUsers);
 
 usersRouter.post(
     "/",
@@ -39,6 +40,7 @@ usersRouter.post(
 usersRouter.patch(
     "/:id",
     [
+        authMiddleware,
         param("id").exists().isNumeric(),
         body("id").not().exists(),
         body("name").optional().isString().isAlphanumeric(),
@@ -51,7 +53,7 @@ usersRouter.patch(
 //  [DELETE] localhost:8000/users/2
 usersRouter.delete(
     "/:id",
-    [param("id").exists().isNumeric(), validate],
+    [authMiddleware, param("id").exists().isNumeric(), validate],
     DeleteUser
 );
 
