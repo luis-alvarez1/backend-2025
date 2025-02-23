@@ -23,6 +23,11 @@ export const CreateUsers = async (req, res) => {
     try {
         const { email, password, name } = req.body;
 
+        const user = await Users.findOne({ where: { email: email } });
+        if (user) {
+            return res.status(400).json({ data: "Usuario ya existe" });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await Users.create({ email, password: hashedPassword, name });
