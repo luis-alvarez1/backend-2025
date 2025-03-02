@@ -25,6 +25,8 @@ app.use("/api/products", productsRouter);
 
 new SocketHandler(server);
 
-app.listen(8000, () => {
-    console.log("App running on port 8000");
-});
+// app.listen(8000, () => {
+// });
+
+server.listen(8000);
+console.log("App running on port 8000");

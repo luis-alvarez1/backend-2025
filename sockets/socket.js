@@ -1,8 +1,8 @@
-import { Socket } from "socket.io";
-import Products from "../routers/products/product-entity";
+import { Server } from "socket.io";
+import Products from "../routers/products/product-entity.js";
 
 export class SocketHandler {
-    socket;
+    iosocket;
     /**
      *
      * 1 evento que emite el frontend para actualizar el stock y lo escucha el backend
@@ -12,12 +12,12 @@ export class SocketHandler {
      */
 
     constructor(serverHttp) {
-        this.socket = Socket(serverHttp);
+        this.iosocket = new Server(serverHttp);
         this.initEvents();
     }
 
     initEvents() {
-        this.socket.on("connection", (socket) => {
+        this.iosocket.on("connection", (socket) => {
             console.log("Cliente conectado");
             socket.on("update-stock", async (payload) => {
                 const { productId } = payload;
@@ -49,6 +49,6 @@ export class SocketHandler {
         });
         const newProduct = await Products.findOne({ where: { id: productId } });
 
-        this.socket.emit("stock-updated", newProduct);
+        this.iosocket.emit("stock-updated", newProduct);
     }
 }
