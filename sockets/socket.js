@@ -39,6 +39,9 @@ export class SocketHandler {
         if (!exists) {
             return null;
         }
+        if (exists.stock === 0) {
+            return true;
+        }
         const updateProduct = { ...exists, stock: exists.stock - 1 };
         // const updateProduct = exists;
         // updateProduct.stock = updateProduct.stock - 1;
