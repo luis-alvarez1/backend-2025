@@ -12,7 +12,7 @@ import {
 
 const productsRouter = Router();
 
-productsRouter.get("/", [authMiddleware], GetAllProducts);
+productsRouter.get("/", GetAllProducts);
 
 productsRouter.post(
     "/",
