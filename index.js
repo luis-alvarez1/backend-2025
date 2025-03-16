@@ -18,7 +18,7 @@ database.setup();
 app.use(cors());
 app.use(morgan());
 app.use(bodyParser());
-app.use(rateLimitMiddleware);
+// app.use(rateLimitMiddleware);
 
 app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
