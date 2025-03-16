@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import Valkey from "iovalkey";
 
 configDotenv();
-const cache = new Valkey(6379, "valkey", {});
+const cache = new Valkey({ host: "http://valkey", port: 6379 });
 export const GetAllUsers = async (req, res) => {
     try {
         let users = await cache.get("users");
