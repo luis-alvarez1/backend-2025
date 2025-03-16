@@ -5,19 +5,10 @@ import jwt from "jsonwebtoken";
 import Valkey from "iovalkey";
 
 configDotenv();
-const cache = new Valkey({ host: "http://valkey", port: 6379 });
+
 export const GetAllUsers = async (req, res) => {
     try {
-        let users = await cache.get("users");
-        users = JSON.parse(users);
-        if (users) {
-            return res.status(200).json({
-                data: users,
-            });
-        }
-
-        users = await Users.findAll();
-        await cache.set("users", JSON.stringify(users), "EX", 10);
+        const users = await Users.findAll();
 
         return res.status(200).json({
             data: users,

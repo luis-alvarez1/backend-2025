@@ -6,19 +6,10 @@ import Valkey from "iovalkey";
 import Products from "./product-entity.js";
 
 configDotenv();
-const cache = new Valkey({ host: "http://valkey", port: 6379 });
+
 export const GetAllProducts = async (req, res) => {
     try {
-        let products = await cache.get("products");
-        products = JSON.parse(products);
-        if (products) {
-            return res.status(200).json({
-                data: products,
-            });
-        }
-
-        products = await Products.findAll();
-        await cache.set("products", JSON.stringify(products), "EX", 10);
+        const products = await Products.findAll();
 
         return res.status(200).json({
             data: products,
