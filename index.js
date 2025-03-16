@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import usersRouter from "./routers/users/users-router.js";
 import { Database } from "./database/db.js";
-import { rateLimitMiddleware } from "./middlewares/rateLimit.js";
+// import { rateLimitMiddleware } from "./middlewares/rateLimit.js";
 import productsRouter from "./routers/products/products-router.js";
 import { SocketHandler } from "./sockets/socket.js";
 import http from "http";
