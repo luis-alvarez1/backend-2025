@@ -4,7 +4,8 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "build": "rm -rf node_modules && npm install --production"
     },
     "keywords": [],
     "author": "",
