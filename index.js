@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import { customMiddleware } from "./middlewares/customMiddleware.js";
 import usersRouter from "./routes/users.routes.js";
+import { configDb } from "./config/db.js";
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.get("/", [customMiddleware], (req, res) => {
         message: "Hola mundo",
     });
 });
+
+configDb();
 
 app.listen(8000, () => {
     console.log("Listening on port 8000");

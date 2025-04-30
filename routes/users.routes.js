@@ -1,52 +1,62 @@
 import { Router } from "express";
-import { UserEntity } from "../entity/users.entity.js";
+import { User } from "../entity/users.entity.js";
 
 const router = Router();
 
-const usersEntity = new UserEntity();
-
-router.get("/", (req, res) => {
-    const users = usersEntity.findAll();
+router.get("/", async (req, res) => {
+    const users = await User.findAll();
 
     return res.json({
         data: users,
     });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const user = usersEntity.findOne(+id);
+    const user = await User.findOne({
+        where: {
+            id: +id,
+        },
+    });
 
     return res.json({
         data: user,
     });
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const userCreate = req.body;
 
-    const createdUser = usersEntity.create(userCreate);
+    const createdUser = await User.create(userCreate);
 
     return res.json({
         data: createdUser,
     });
 });
 
-router.patch("/:id", (req, res) => {
+router.patch("/:id", async (req, res) => {
     const { id } = req.params;
     const userUpdate = req.body;
 
-    const updatedUser = usersEntity.update(+id, userUpdate);
+    const updatedUser = await User.update(userUpdate, {
+        where: {
+            id: +id,
+        },
+    });
 
     return res.json({
         data: updatedUser,
     });
 });
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
 
     return res.json({
-        data: usersEntity.delete(+id),
+        data: await User.destroy({
+            where: {
+                id: +id,
+            },
+        }),
     });
 });
 

@@ -21,6 +21,8 @@
     "dependencies": {
         "body-parser": "^2.2.0",
         "express": "^5.1.0",
-        "morgan": "^1.10.0"
+        "mariadb": "^3.4.2",
+        "morgan": "^1.10.0",
+        "sequelize": "^6.37.7"
     }
 }
