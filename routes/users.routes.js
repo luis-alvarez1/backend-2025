@@ -2,15 +2,28 @@ import { Router } from "express";
 import { User } from "../entity/users.entity.js";
 import { validate } from "../middlewares/validate.js";
 import { body, param } from "express-validator";
-import { customMiddleware } from "../middlewares/customMiddleware.js";
 import { checkUserInDB } from "../middlewares/checkUser.js";
 import jwt from "jsonwebtoken";
 import { authorize } from "../middlewares/auth.js";
+import { cacheValkey } from "../config/cacheValkey.js";
+import dotenv from "dotenv";
+
+dotenv.configDotenv();
 
 const router = Router();
 
 router.get("/", async (req, res) => {
+    const usersCache = await cacheValkey.get("users");
+
+    if (usersCache) {
+        return res.json({
+            data: JSON.parse(usersCache),
+        });
+    }
+
     const users = await User.findAll();
+
+    await cacheValkey.set("users", JSON.stringify(users), "EX", 60);
 
     return res.json({
         data: users,
@@ -154,7 +167,7 @@ router.post(
 
         if (password !== user.password) {
             return res.status(401).json({
-                error: "Invalid Email",
+                error: "Invalid Password",
             });
         }
 
@@ -162,13 +175,9 @@ router.post(
             id: user.id,
             email: user.email,
         };
-        const token = jwt.sign(
-            payload,
-            "ff3bfba6403b1f9b320fca03efc201b8e85f03d465bb7013a9fcfeb2698a0c4dc007f1046024a18a830de7bffae764bcd5add50a9928fe44ce9697900074a268",
-            {
-                expiresIn: "2h",
-            }
-        );
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: "2h",
+        });
 
         res.status(200).json({
             token: token,

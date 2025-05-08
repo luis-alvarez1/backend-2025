@@ -4,11 +4,16 @@ import morgan from "morgan";
 import { customMiddleware } from "./middlewares/customMiddleware.js";
 import usersRouter from "./routes/users.routes.js";
 import { configDb } from "./config/db.js";
+import dotenv from "dotenv";
+import { apiRateLimit } from "./middlewares/apiRateLimit.js";
+
+dotenv.configDotenv();
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(morgan());
+app.use(apiRateLimit);
 
 app.use("/users", usersRouter);
 
