@@ -2,13 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        GIT_REPO_URL = 'https://github.com/luis-alvarez1/backend-2025.git'
-        DOCKER_IMAGE_NAME = 'luisalvarez1106/ecommerce-backend'
+        // These will be auto-generated from your credentials
+        DOCKER_CREDS = credentials('docker-hub-credentials')
+        GIT_REPO_URL = 'https://github.com/tu-usuario/tu-repo.git'
+        DOCKER_IMAGE_NAME = 'tu-usuario/tu-imagen-node'
     }
 
     stages {
-        stage('Descargar Repositorio') {
+        stage('Clone Repository') {
             steps {
                 checkout([
                     $class: 'GitSCM',
@@ -18,55 +19,61 @@ pipeline {
             }
         }
 
-        stage('Instalar Dependencias') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
 
-		stage('Login a Docker Hub') {
+        stage('Docker Login') {
             steps {
-                script {
-                    // Login a Docker Hub usando las credenciales almacenadas
-                    sh "echo ${env.DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${env.DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
-                }
+                sh """
+                    docker login -u ${env.DOCKER_CREDS_USR} -p ${env.DOCKER_CREDS_PSW}
+                """
             }
         }
 
-        stage('Construir Imagen Docker') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Usamos el número de build de Jenkins para versionar
                     def buildNumber = env.BUILD_NUMBER
-                    
-                    // Construir imagen con tag del build number y latest
-                    docker.build("${env.DOCKER_IMAGE_NAME}:${buildNumber}")
-                    docker.build("${env.DOCKER_IMAGE_NAME}:latest")
+                    sh """
+                        docker build -t ${env.DOCKER_IMAGE_NAME}:${buildNumber} .
+                        docker tag ${env.DOCKER_IMAGE_NAME}:${buildNumber} ${env.DOCKER_IMAGE_NAME}:latest
+                    """
                 }
             }
         }
 
-        stage('Push a Docker Hub') {
+        stage('Push to Docker Hub') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_HUB_CREDENTIALS) {
-                        def buildNumber = env.BUILD_NUMBER
-                        
-                        // Hacer push de ambas versiones
-                        docker.image("${env.DOCKER_IMAGE_NAME}:${buildNumber}").push()
-                        docker.image("${env.DOCKER_IMAGE_NAME}:latest").push()
-                    }
+                    def buildNumber = env.BUILD_NUMBER
+                    sh """
+                        docker push ${env.DOCKER_IMAGE_NAME}:${buildNumber}
+                        docker push ${env.DOCKER_IMAGE_NAME}:latest
+                    """
                 }
+            }
+        }
+
+        stage('Docker Logout') {
+            steps {
+                sh 'docker logout'
             }
         }
     }
 
     post {
+        always {
+            sh 'docker logout || true'  // Ensure clean logout even if previous steps failed
+            cleanWs()  // Optional: clean workspace after build
+        }
         success {
-            echo "Pipeline ejecutado con éxito! Imagen ${env.DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} subida a Docker Hub."
+            echo "Success! Images pushed to Docker Hub: ${env.DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} and :latest"
         }
         failure {
-            echo 'Pipeline falló. Revisar los logs para más información.'
+            echo 'Pipeline failed - check logs for details'
         }
     }
 }
