@@ -27,7 +27,7 @@ pipeline {
         stage('Docker Login with PAT') {
             steps {
                 sh """
-                    echo ${env.DOCKER_CREDS_PSW} | docker login -u ${env.DOCKER_CREDS_USR} --password-stdin
+                    echo ${env.DOCKER_HUB_CREDENTIALS} | docker login -u ${env.DOCKER_HUB_CREDENTIALS} --password-stdin
                 """
             }
         }
