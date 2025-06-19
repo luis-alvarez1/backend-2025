@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     environment {
-        // These will be auto-generated from your credentials
-        DOCKER_CREDS = credentials('docker-hub-credentials')
-        GIT_REPO_URL = 'https://github.com/tu-usuario/tu-repo.git'
-        DOCKER_IMAGE_NAME = 'tu-usuario/tu-imagen-node'
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+        GIT_REPO_URL = 'https://github.com/luis-alvarez1/backend-2025.git'
+        DOCKER_IMAGE_NAME = 'luisalvarez1106/ecommerce-backend'
     }
 
-    stages {
+     stages {
         stage('Clone Repository') {
             steps {
                 checkout([
