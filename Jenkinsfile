@@ -24,10 +24,10 @@ pipeline {
             }
         }
 
-        stage('Docker Login with PAT') {
+        stage('Docker Login') {
             steps {
                 sh """
-                    echo ${env.DOCKER_HUB_CREDENTIALS} | docker login -u ${env.DOCKER_HUB_CREDENTIALS} --password-stdin
+                    docker login -u ${env.DOCKER_HUB_CREDENTIALS_USR} -p ${env.DOCKER_HUB_CREDENTIALS_PSW}
                 """
             }
         }
@@ -35,9 +35,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    def buildNumber = env.BUILD_NUMBER
                     sh """
-                        docker build -t ${env.DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} .
-                        docker tag ${env.DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} ${env.DOCKER_IMAGE_NAME}:latest
+                        docker build -t ${env.DOCKER_IMAGE_NAME}:${buildNumber} .
+                        docker tag ${env.DOCKER_IMAGE_NAME}:${buildNumber} ${env.DOCKER_IMAGE_NAME}:latest
                     """
                 }
             }
@@ -46,11 +47,18 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
+                    def buildNumber = env.BUILD_NUMBER
                     sh """
-                        docker push ${env.DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
+                        docker push ${env.DOCKER_IMAGE_NAME}:${buildNumber}
                         docker push ${env.DOCKER_IMAGE_NAME}:latest
                     """
                 }
+            }
+        }
+
+        stage('Docker Logout') {
+            steps {
+                sh 'docker logout'
             }
         }
     }
